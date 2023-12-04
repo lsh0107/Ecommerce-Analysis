@@ -83,8 +83,8 @@ DATABASES = {
         "ENGINE": "django_redshift_backend",
         "NAME": "dev",
         "USER": "admin",
-        "PASSWORD": "Admin1234",
-        "HOST": "default-workgroup.958652139739.us-west-2.redshift-serverless.amazonaws.com",
+        "PASSWORD": "qwer1234",
+        "HOST": "endpoint",
         "PORT": 5439
     }
 }
