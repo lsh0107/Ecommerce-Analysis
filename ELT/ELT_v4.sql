@@ -94,4 +94,65 @@ select J.*,
 from J;
 
 
+-- create or replace table ma.analytics.DescriptionLength_Sales as
+-- 제품당 사진갯수, product_data,order_item_data 합침
+with C as(
+    select A.product_id, order_id, product_description_lenght
+    from product_data A
+    inner join order_item_data B on A.product_id=B.product_id
+    order by A.product_id
+)
 
+-- 제대로 주문된 오더위주로 좁힘, 글자수 300개 단위로 묶어 출력
+select count(D.order_id) as sales, FLOOR(C.product_description_lenght / 60) * 60 AS description_length_range
+from real_order_data D
+inner join C on C.order_id=D.order_id
+where C.product_description_lenght is not null
+group by description_length_range
+order by description_length_range desc;
+
+drop table DescriptionLength_Sales;
+
+
+-- 제품당 사진갯수, product_data,order_item_data 합침
+with C as(
+    select A.product_id, order_id, product_photos_qty
+    from product_data A
+    inner join order_item_data B on A.product_id=B.product_id
+)
+
+-- 제대로 주문된 오더위주로 좁힘
+select count(D.order_id) as sales, C.product_photos_qty
+from real_order_data D
+inner join C on C.order_id=D.order_id
+where C.product_photos_qty is not null
+group by C.product_photos_qty
+order by product_photos_qty desc;
+
+
+-- create or replace table ma.analytics.review_sales_correlation as
+-- 우선 판매량이 가장 많은 제품 추출
+with best as(
+    select count(product_id) as c_product_id ,product_id
+    from order_item_data
+    group by product_id
+    order by c_product_id desc
+    limit 1),
+
+-- 그 제품의 리뷰내용 전부 추출
+reviews as(
+    select A.order_id, A.product_id
+    from order_item_data A
+    join best on A.product_id=best.product_id
+    order by A.product_id
+    )
+    
+-- 시간에 따른 리뷰내용과 판매량의 관계
+select B.review_creation_date,
+SUM(COUNT(B.order_id)) OVER (ORDER BY B.review_creation_date) AS c_sales_count,
+SUM(COUNT(B.review_comment_message)) OVER (ORDER BY B.review_creation_date) AS c_review_count
+from order_review_data B
+
+join reviews on reviews.order_id=B.order_id
+group by B.review_creation_date
+order by B.review_creation_date;
