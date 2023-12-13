@@ -8,7 +8,7 @@
 
 - ERD
 
-![Untitled](https://github.com/lsh0107/Ecommerce-Analysis/assets/101846036/70e7b551-65f6-400c-993b-895b278ca11a)
+![Untitled-2](https://github.com/lsh0107/Ecommerce-Analysis/assets/101846036/936284a8-653b-4ad8-bef1-4991f5ef93f8)
 
 - 전체 시스템 디자인
 
